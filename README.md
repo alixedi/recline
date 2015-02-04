@@ -21,5 +21,5 @@ Option-B
 Option-C
 --------
 
-* "And it even runs on my phone!" - Bob
+* "And it even runs on my phone!" - [#SaidBob](http://twitter.com/#SaidBob)
 * ReCLIne
