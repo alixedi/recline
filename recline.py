@@ -15,7 +15,7 @@ import pprint
 import argparse
 import imp
 from bottle import template, get, post, run, request
-
+from subprocess import call
 
 #ArgumentParser description. The object is kept global so that it remains
 #accessible for import and therefore cli2web can work from a self-generated
@@ -69,6 +69,13 @@ html = """
 
 context = {}
 
+def run_script(script, argparse, args):
+    """Run the given script after properly formatting the input
+    with the given argparse objects and args"""
+    # format the arguments - positional and optional!
+    args = args
+    call(['python'] + [script] + args)
+
 @get('/')
 def index():
     return template(html, **context)
@@ -76,9 +83,10 @@ def index():
 @post('/')
 def form():
     print request.forms.get('integers') 
-    return 'coming soon!'
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
+    result = "coming soon!"
+    return result
 
 def main():
     args = parser.parse_args()
