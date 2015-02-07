@@ -15,7 +15,12 @@ import pprint
 import argparse
 import imp
 from bottle import template, get, post, run, request
+<<<<<<< Updated upstream
 
+=======
+from subprocess import call
+import re
+>>>>>>> Stashed changes
 
 #ArgumentParser description. The object is kept global so that it remains
 #accessible for import and therefore cli2web can work from a self-generated
@@ -69,6 +74,7 @@ html = """
 
 context = {}
 
+<<<<<<< Updated upstream
 def get_pythonfiles():
     directory = os.walk('tests')
     directory = directory.next()
@@ -79,6 +85,19 @@ def get_pythonfiles():
 @get('/')
 def choosefile():
     pass
+=======
+def run_script(script, argparse, args):
+    """Run the given script after properly formatting the input
+    with the given argparse objects and args"""
+    options = argparse['_option_string_actions']
+    dest = {}
+    for key, value in options.iteritems():
+        dest[value.dest] = key
+
+    # format the arguments - positional and optional!
+    args = args
+    call(['python'] + [script] + args)
+>>>>>>> Stashed changes
 
 @get('/')
 def index():
@@ -89,6 +108,15 @@ def form():
     print request.forms.get('integers')
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
+<<<<<<< Updated upstream
+=======
+
+    run_script('tests/test1.py', argparse, request.forms.dict)
+
+    import pdb; pdb.set_trace()
+    result = "coming soon!"
+    return result
+>>>>>>> Stashed changes
 
 def main():
     args = parser.parse_args()
@@ -104,6 +132,7 @@ def main():
             #print template(html, **obj.__dict__)
             global context
             context = obj.__dict__
+            context['root'] = root
             print template(html, **context)
     run(host='0.0.0.0', port=8080)
 
