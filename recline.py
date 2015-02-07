@@ -48,8 +48,8 @@ html = """
                     % for action in group._group_actions:
                         % import argparse
                         % if not type(action) is argparse._HelpAction:
-                            {{ action.dest }}: \ 
-                            <input type="text" \ 
+                            {{ action.dest }}: \
+                            <input type="text" \
                                    {{ 'required' if action.required else '' }} \
                                    id = '{{ action.dest }}' name='{{ action.dest }}'
                                    value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
@@ -69,13 +69,20 @@ html = """
 
 context = {}
 
+def get_pythonfiles():
+    directory = os.walk('tests')
+    directory = directory.next()
+    filelist = directory[2]
+    py = [py for py in filelist if in '.py']
+    return py
+
 @get('/')
 def index():
     return template(html, **context)
 
 @post('/')
 def form():
-    print request.forms.get('integers') 
+    print request.forms.get('integers')
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
 
