@@ -48,8 +48,8 @@ html = """
                     % for action in group._group_actions:
                         % import argparse
                         % if not type(action) is argparse._HelpAction:
-                            {{ action.dest }}: \ 
-                            <input type="text" \ 
+                            {{ action.dest }}: 
+                            <input type="text" 
                                    {{ 'required' if action.required else '' }} \
                                    id = '{{ action.dest }}' name='{{ action.dest }}'
                                    value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
