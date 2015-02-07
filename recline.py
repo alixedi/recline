@@ -13,7 +13,7 @@ I haven't decided on these yet
 import os
 import pprint
 import argparse
-import importlib
+import imp
 from bottle import template
 
 
@@ -48,7 +48,6 @@ html = """
                     % for action in group._group_actions:
                         % import argparse
                         % if not type(action) is argparse._HelpAction:
-                            {{ action }}
                             {{ action.dest }}: \ 
                             <input type="text" \ 
                                    {{ 'required' if action.required else '' }} \
@@ -72,12 +71,12 @@ def main():
     root, ext = os.path.splitext(args.script.name)
     if not ext == '.py':
         parser.error('Not a Python script!')
-    module = importlib.import_module(root.replace('/', '.'))
+    module = imp.load_source('', args.script.name)
     for sym in dir(module):
         obj = getattr(module, sym)
         if isinstance(obj, argparse.ArgumentParser):
-            #pp = pprint.PrettyPrinter(indent=4)
-            #pp.pprint(obj.__dict__)
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(obj.__dict__)
             print template(html, **obj.__dict__)
 
 if __name__ == "__main__":
