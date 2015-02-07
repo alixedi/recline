@@ -22,7 +22,7 @@
                     % import argparse
                     % if not type(action) is argparse._HelpAction:
                         <div class="form-group">
-                            <label>{{ action.dest.title() }}</label>
+                            <label>{{ action.dest.title() }} - {{ action.type }}</label>
                             <input class="form-control" type="text" \ 
                                    {{ 'required' if action.required else '' }} \
                                    id = '{{ action.dest }}' name='{{ action.dest }}'
