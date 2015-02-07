@@ -14,7 +14,7 @@ import os
 import pprint
 import argparse
 import imp
-from bottle import template
+from bottle import template, route, run
 
 
 #ArgumentParser description. The object is kept global so that it remains
@@ -68,6 +68,10 @@ html = """
 
 context = {}
 
+@route('/')
+def index():
+    return template(html, **context)
+
 def main():
     args = parser.parse_args()
     root, ext = os.path.splitext(args.script.name)
@@ -83,6 +87,7 @@ def main():
             global context
             context = obj.__dict__
             print template(html, **context)
+    run(host='0.0.0.0', port=8080)
 
 if __name__ == "__main__":
     main()
