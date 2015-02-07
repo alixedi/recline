@@ -14,7 +14,7 @@ import os
 import pprint
 import argparse
 import imp
-from bottle import template, route, run
+from bottle import template, get, post, run, request
 
 
 #ArgumentParser description. The object is kept global so that it remains
@@ -51,6 +51,7 @@ html = """
                             {{ action.dest }}: \ 
                             <input type="text" \ 
                                    {{ 'required' if action.required else '' }} \
+                                   id = '{{ action.dest }}' name='{{ action.dest }}'
                                    value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
                             <br>
                             {{ action.help }}<br>
@@ -68,9 +69,15 @@ html = """
 
 context = {}
 
-@route('/')
+@get('/')
 def index():
     return template(html, **context)
+
+@post('/')
+def form():
+    print request.forms.get('integers') 
+    # Now we can access the post data, we just need to plug it into the cli
+    # script, run the thing and return results!
 
 def main():
     args = parser.parse_args()
