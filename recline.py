@@ -76,6 +76,7 @@ def index():
 @post('/')
 def form():
     print request.forms.get('integers') 
+    return 'coming soon!'
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
 
