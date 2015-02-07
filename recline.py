@@ -77,6 +77,10 @@ def get_pythonfiles():
     return py
 
 @get('/')
+def choosefile():
+    pass
+
+@get('/')
 def index():
     return template(html, **context)
 
