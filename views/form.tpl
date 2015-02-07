@@ -10,19 +10,19 @@
   </head>
   <body>
     <div class="container">
-        <h1>{{ prog }}</h1>
+        <h1>{{ prog.title() }}</h1>
         % if description:
             <p>{{ description }}</p>
         % end
         <hr>
         <form method="POST" action=".">
             % for group in _action_groups:
-                <legend>{{ group.title }}</legend>
+                <legend>{{ group.title.title() }}</legend>
                 % for action in group._group_actions:
                     % import argparse
                     % if not type(action) is argparse._HelpAction:
                         <div class="form-group">
-                            <label>{{ action.dest }}:</label>
+                            <label>{{ action.dest.title() }}</label>
                             <input class="form-control" type="text" \ 
                                    {{ 'required' if action.required else '' }} \
                                    id = '{{ action.dest }}' name='{{ action.dest }}'
