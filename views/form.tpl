@@ -22,11 +22,27 @@
                     % import argparse
                     % if not type(action) is argparse._HelpAction:
                         <div class="form-group">
-                            <label>{{ action.dest.title() }} - {{ action.type }}</label>
-                            <input class="form-control" type="text" \ 
-                                   {{ 'required' if action.required else '' }} \
-                                   id = '{{ action.dest }}' name='{{ action.dest }}'
-                                   value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
+                            <label>{{ action.dest.title() }} -- {{ str(action.type)[7:-2] }}</label>
+                            % if(str(action.type)[7:-2] == 'bool'): 
+                                    <select class="form-control">
+                                        <option name="{{ action.dest }}" id="{{ action.dest }}" value="True">True</option>
+                                        <option name="{{ action.dest }}" id="{{ action.dest }}" value="False">False</option>
+                                    </select>   
+                            % else:
+                                <input class="form-control"  
+                                       {{ 'required' if action.required else '' }} 
+                                       id = '{{ action.dest }}' name='{{ action.dest }}'
+                                       
+                                        %if(str(action.type)[7:-2] == 'int'):
+                                            type="number"
+                                        %else:
+                                            type="text"
+                                        %end    
+                                        
+                                       value={{ action.default if hasattr(action.default, '__dict__') else '' }}
+                                        
+                                        >
+                            % end            
                             <br>
                             {{ action.help }}<br>
                         </div>    
