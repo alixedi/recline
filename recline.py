@@ -38,34 +38,36 @@ html = """
             <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
           </head>
           <body>
-            <h1>{{ prog }}</h1>
-            % if description:
-                <p>{{ description }}</p>
-            % end
-            <hr>
-            <form method="POST" action=".">
-                % for group in _action_groups:
-                    <legend>{{ group.title }}</legend>
-                    % for action in group._group_actions:
-                        % import argparse
-                        % if not type(action) is argparse._HelpAction:
-                            <div class="form-group">
-                                <label>{{ action.dest }}:</label>
-                                <input class="form-control" type="text" \ 
-                                       {{ 'required' if action.required else '' }} \
-                                       id = '{{ action.dest }}' name='{{ action.dest }}'
-                                       value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
-                                <br>
-                                {{ action.help }}<br>
-                            </div>    
+            <div class="container">
+                <h1>{{ prog }}</h1>
+                % if description:
+                    <p>{{ description }}</p>
+                % end
+                <hr>
+                <form method="POST" action=".">
+                    % for group in _action_groups:
+                        <legend>{{ group.title }}</legend>
+                        % for action in group._group_actions:
+                            % import argparse
+                            % if not type(action) is argparse._HelpAction:
+                                <div class="form-group">
+                                    <label>{{ action.dest }}:</label>
+                                    <input class="form-control" type="text" \ 
+                                           {{ 'required' if action.required else '' }} \
+                                           id = '{{ action.dest }}' name='{{ action.dest }}'
+                                           value={{ action.default if hasattr(action.default, '__dict__') else '' }}>
+                                    <br>
+                                    {{ action.help }}<br>
+                                </div>    
+                            % end
                         % end
                     % end
+                    <input type=submit value="Go" />
+                </form>
+                % if epilog:
+                    <p>{{ epilog }}</p>
                 % end
-                <input type=submit value="Go" />
-            </form>
-            % if epilog:
-                <p>{{ epilog }}</p>
-            % end
+            </div>      
           </body>
         </html>
     """
