@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser(description=desc)
 parser.add_argument('script', type=file)
 
 #Template for the web interface
+<<<<<<< HEAD
 html = """
         <!DOCTYPE html>
         <html lang="en">
@@ -67,6 +68,10 @@ html = """
         </html>
     """
 
+=======
+#Template moved to
+html = ""
+>>>>>>> 7739120d363709c4578505381a944901aed1331f
 context = {}
 
 def run_script(script, argparse, args):
@@ -78,11 +83,16 @@ def run_script(script, argparse, args):
 
 @get('/')
 def index():
-    return template(html, **context)
+    return template('form', **context)
 
 @post('/')
 def form():
+<<<<<<< HEAD
     print request.forms.get('integers') 
+=======
+    return request.forms.get('integers') 
+    #return 'coming soon!'
+>>>>>>> 7739120d363709c4578505381a944901aed1331f
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
     result = "coming soon!"
@@ -102,7 +112,7 @@ def main():
             #print template(html, **obj.__dict__)
             global context
             context = obj.__dict__
-            print template(html, **context)
+            print template('form', **context)
     run(host='0.0.0.0', port=8080)
 
 if __name__ == "__main__":
