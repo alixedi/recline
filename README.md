@@ -23,3 +23,13 @@ Option-C
 
 * "And it even runs on my phone!" - [#SaidBob](http://twitter.com/#SaidBob)
 * ReCLIne
+
+
+How do I get started?
+---------------------
+
+* git clone http://github.com/alixedi/recline
+* cd recline
+* python recline.py tests/test1.py > out.html
+* open out.html
+* Enjoy!
