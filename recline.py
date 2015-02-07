@@ -66,6 +66,8 @@ html = """
         </html>
     """
 
+context = {}
+
 def main():
     args = parser.parse_args()
     root, ext = os.path.splitext(args.script.name)
@@ -75,9 +77,12 @@ def main():
     for sym in dir(module):
         obj = getattr(module, sym)
         if isinstance(obj, argparse.ArgumentParser):
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(obj.__dict__)
-            print template(html, **obj.__dict__)
+            #pp = pprint.PrettyPrinter(indent=4)
+            #pp.pprint(obj.__dict__)
+            #print template(html, **obj.__dict__)
+            global context
+            context = obj.__dict__
+            print template(html, **context)
 
 if __name__ == "__main__":
     main()
