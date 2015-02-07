@@ -26,17 +26,18 @@ parser = argparse.ArgumentParser(description=desc)
 parser.add_argument('script', type=file)
 
 #Template for the web interface
-#Template moved to Views.
+#Template moved to
+html = ""
 context = {}
 
 @get('/')
 def index():
-    return template(html, **context)
+    return template('form', **context)
 
 @post('/')
 def form():
-    print request.forms.get('integers') 
-    return 'coming soon!'
+    return request.forms.get('integers') 
+    #return 'coming soon!'
     # Now we can access the post data, we just need to plug it into the cli
     # script, run the thing and return results!
 
