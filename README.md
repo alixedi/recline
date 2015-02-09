@@ -14,15 +14,15 @@ Option-A
 Option-B
 --------
 
-* Invest in foam wallpaper
 * Pick up some Python GUI library
+* Invest in foam wallpaper
 
 
 Option-C
 --------
 
-* "And it even runs on my phone!" - [#SaidBob](http://twitter.com/#SaidBob)
 * ReCLIne
+* "And it even runs on my phone!" - [#SaidBob](http://twitter.com/#SaidBob)
 
 
 How do I get started?
