@@ -96,7 +96,7 @@ def main():
             global CONTEXT
             CONTEXT = obj.__dict__
             print template('form', **CONTEXT)
-    run(host='0.0.0.0', port=8080)
+    run(host='localhost', port=8080)
 
 if __name__ == "__main__":
     main()
