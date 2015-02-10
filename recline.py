@@ -62,6 +62,7 @@ def run_script(script, argpardict, args):
                 arglist += [args[action.dest][0]]
 
     # format the arguments - positional and optional!
+    print arglist
     out = check_output(['python'] + [script] + arglist)
     return out
 
