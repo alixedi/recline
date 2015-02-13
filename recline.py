@@ -1,102 +1,168 @@
-"""
-Usage: cli2web.py [options] [script]
-cli2web creates a web interface for a given Python script that uses argparse
-for the CLI.
-
-Examples:
-cli2web.py my_script.py #creates web interface for my_script.py
-
-Options:
-I haven't decided on these yet
-"""
-
-import os
-import pprint
-import argparse
-import imp
-from bottle import template, get, post, run, request
+from bottle import template, route, run, request
+from imp import load_source
+from argparse import ArgumentParser
+from os.path import basename, splitext
 from subprocess import check_output
+import os
 
 
-# ArgumentParser description. The object is kept global so that it remains
-# accessible for import and therefore cli2web can work from a self-generated
-# web interaface.
-desc = ("Creates a web interface for a given Python script that uses "
-        "argparse for CLI.")
-parser = argparse.ArgumentParser(description=desc)
+
+class ScriptRender(object):
+	"""Render a script as an HTML page."""
+
+	def __init__(self, script):
+		self.script = script
+
+	def render(self):
+		return template(self.get_template(), {'self': self})
+
+	def get_template(self):
+		return 'page'
+
+	def get_title(self):
+		title, _ = splitext(basename(self.script))
+		return title
+
+	def get_argparsers(self):
+		mod = load_source('', self.script)
+		f = lambda x: isinstance(x, ArgumentParser)
+		return  filter(f, mod.__dict__.values())
+
+	def render_argparser(self, argparser):
+		return ArgparserRender(argparser).render()
+
+
+
+class ArgparserRender(object):
+	"""Render an argparse object as an HTML form."""
+
+	def __init__(self, argparser):
+		self.argparser = argparser
+
+	def render(self):
+		return template(self.get_template(), {'self': self})
+
+	def get_template(self):
+		return 'form'
+
+	def get_description(self):
+		return self.argparser.description
+
+	def get_groups(self):
+		return self.argparser._action_groups
+
+	def render_group(self, group):
+		return GroupRender(group).render()
+
+	def get_epilog(self):
+		return self.argparser.epilog
+
+
+
+class GroupRender(object):
+	"""Render an action group as an HTML formset."""
+
+	def __init__(self, group):
+		self.group = group
+
+	def render(self):
+		return template(self.get_template(), {'self': self})
+
+	def get_template(self):
+		return 'formset'
+
+	def get_title(self):
+		return self.group.title
+
+	def get_actions(self):
+		actions = self.group._group_actions
+		no_help = lambda a: not type(a).__name__ == '_HelpAction'
+		return filter(no_help, actions)
+
+	def render_action(self, action):
+		return ActionRender(action).render()
+
+
+
+class ActionRender(object):
+	"""Render an action as an HTML field."""
+
+	def __init__(self, action):
+		self.action = action
+
+	def render(self):
+		return template(self.get_template(), {'self': self})
+
+	def get_template(self):
+		return 'field'
+
+	def get_flag(self):
+		opt = self.action.option_strings
+		if len(opt) > 0:
+			return opt[0]
+		return None
+
+	def get_name(self):
+		flag = self.get_flag()
+		if flag:
+			return flag.strip('-')
+		return self.action.dest
+
+	def get_required(self):
+		return 'required' if self.action.required else ''
+
+	def get_default(self):
+		value = self.action.default
+		if hasattr(value, '__call__'):
+			return value.__name__
+		return value
+
+	def get_help(self):
+		return self.action.help
+
+	def get_type(self):
+		kls = type(self.action).__name__
+		fmt = '_Store%sAction'
+		if kls in [fmt % x for x in ('Const', 'True', 'False')]:
+			return 'checkbox'
+		elif kls == '_StoreAction':
+			typ = self.action.type.__name__
+			mpg = {'int': 'number',
+				   'file': 'file'}
+			if typ in mpg:
+				return mpg[typ]
+			return ''
+
+
+@route('/')
+def send_form():
+	return __R__.render()
+
+@route('/', method='POST')
+def process_form():
+	args = []
+	for argparser in __R__.get_argparsers():
+		argparser_render = ArgparserRender(argparser)
+		for group in argparser_render.get_groups():
+			group_render = GroupRender(group)
+			for action in group_render.get_actions():
+				action_render = ActionRender(action)
+				name = action_render.get_name()
+				value = request.forms.get(name)
+				if value:
+					flag = action_render.get_flag()
+					if flag:
+						args = args + [flag]
+					args = args + [value]
+	print ['python'] + [__R__.script] + args
+	return check_output(['python'] + [__R__.script] + args)
+
+
+parser = ArgumentParser(description='Web Apps from CLI scripts.')
 parser.add_argument('script', type=file)
 
-CONTEXT = {}
-
-
-def get_pythonfiles():
-    directory = os.walk('tests')
-    directory = directory.next()
-    filelist = directory[2]
-    py = [py for py in filelist if '.py' in py]
-    return py
-
-
-def run_script(script, argparse, args):
-    """Run the given script after properly formatting the input
-    with the given argparse objects and args"""
-    # format the arguments - positional and optional!
-    args = args
-    call(['python'] + [script] + args)
-
-
-@get('/file')
-def choosefile():
-    pass
-
-def run_script(script, argpardict, args):
-    """Run the given script after properly formatting the input
-    with the given argparse objects and args"""
-
-    arglist = []
-    for action in argpardict['_actions']:
-        if not type(action) is argparse._HelpAction:
-            if action.dest in args:
-                if len(action.option_strings) > 0:
-                    arglist.append(action.option_strings[0])
-                arglist.append(args[action.dest][0])
-    # format the arguments - positional and optional!
-    print arglist
-    out = check_output(['python'] + [script] + arglist)
-    return out
-
-
-@get('/')
-def index():
-    return template('form', **CONTEXT)
-
-
-@post('/')
-def form():
-    # Now we can access the post data, we just need to plug it into the cli
-    # script, run the thing and return results!
-
-    # name needs to change accordingly.
-    result = run_script('tests/test_acc.py', CONTEXT, request.forms.dict)
-    return result
-
-
-def main():
-    args = parser.parse_args()
-    root, ext = os.path.splitext(args.script.name)
-    if not ext == '.py':
-        parser.error('Not a Python script!')
-    module = imp.load_source('', args.script.name)
-    for sym in dir(module):
-        obj = getattr(module, sym)
-        if isinstance(obj, argparse.ArgumentParser):
-            # pp = pprint.PrettyPrinter(indent=4)
-            # pp.pprint(obj.__dict__)
-            # print template(html, **obj.__dict__)
-            global CONTEXT
-            CONTEXT = obj.__dict__
-            print template('form', **CONTEXT)
-    run(host='localhost', port=8080)
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+	args = parser.parse_args()
+	global __R__
+	__R__ = ScriptRender(args.script.name)
+	run(host='localhost', port=8080)
