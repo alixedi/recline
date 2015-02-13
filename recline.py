@@ -54,13 +54,12 @@ def run_script(script, argpardict, args):
     with the given argparse objects and args"""
 
     arglist = []
-    for group in argpardict['_action_groups']:
-        for action in group._group_actions:
-            if group.title == 'positional argument':
-                arglist += [args[action.dest][0]]
-            if not type(action) is argparse._HelpAction:
-                arglist += [args[action.dest][0]]
-
+    for action in argpardict['_actions']:
+        if not type(action) is argparse._HelpAction:
+            if action.dest in args:
+                if len(action.option_strings) > 0:
+                    arglist.append(action.option_strings[0])
+                arglist.append(args[action.dest][0])
     # format the arguments - positional and optional!
     print arglist
     out = check_output(['python'] + [script] + arglist)
