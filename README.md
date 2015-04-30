@@ -30,6 +30,6 @@ How do I get started?
 
 * git clone http://github.com/alixedi/recline
 * cd recline
-* python recline.py tests/test_ac.py
+* python recline.py tests/test_acc.py
 * Go to your browser and type: localhost:8080
 * Enjoy!
